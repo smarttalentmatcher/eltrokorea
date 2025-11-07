@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <title>비밀번호 확인</title>
+  <title>EltroKorea</title>
   <style>
     /* 전체 페이지 스타일 */
     body {
@@ -184,9 +184,14 @@
     };
 
     async function checkPassword(section) {
+      console.log('checkPassword called with section:', section);
       const userInput = prompt("비밀번호를 입력하세요.");
-      if (userInput === null) return; // 취소 시 아무 동작 없음
+      if (userInput === null) {
+        console.log('User cancelled password input');
+        return; // 취소 시 아무 동작 없음
+      }
       
+      console.log('Sending login request...');
       try {
         const response = await fetch('/api/login', {
           method: 'POST',
@@ -200,11 +205,23 @@
           })
         });
         
+        console.log('Response status:', response.status);
+        console.log('Response ok:', response.ok);
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('Response error:', errorText);
+          alert("서버 오류가 발생했습니다: " + response.status);
+          return;
+        }
+        
         const result = await response.json();
+        console.log('Response result:', result);
         
         if (result.success) {
           // 비밀번호 일치 시 페이지 이동
           const targetPage = sectionPages[section] || section + ".html";
+          console.log('Redirecting to:', targetPage);
           window.location.href = targetPage;
         } else {
           alert(result.message || "비밀번호가 틀렸습니다.");
