@@ -157,10 +157,20 @@ app.use((req, res, next) => {
 
 // 정적 파일 제공 (HTML 제외)
 app.use(express.static(__dirname, {
-  setHeaders: (res, path) => {
+  setHeaders: (res, filePath) => {
     // HTML 파일은 위 미들웨어에서 처리되므로 여기서는 제외
   }
 }));
+
+// HTML 파일 제공 라우트 (인증 후)
+app.get('*.html', (req, res) => {
+  const filePath = path.join(__dirname, req.path);
+  if (fs.existsSync(filePath)) {
+    res.sendFile(filePath);
+  } else {
+    res.status(404).send('File not found');
+  }
+});
 
 // 저장 경로 설정 (환경 변수로 로컬/Railway 구분)
 // 로컬: __dirname 사용 (컴퓨터 하드)
