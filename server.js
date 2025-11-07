@@ -30,11 +30,13 @@ app.use(session({
   secret: process.env.SESSION_SECRET || 'eltrokorea-secret-key-2024',
   resave: true, // 세션 저장 강제
   saveUninitialized: true, // 초기화되지 않은 세션도 저장
+  name: 'connect.sid', // 기본 세션 쿠키 이름
   cookie: {
     secure: true, // Railway는 항상 HTTPS 제공
     httpOnly: true,
     maxAge: 4 * 60 * 60 * 1000, // 4시간
-    sameSite: 'none' // HTTPS에서 크로스 사이트 쿠키 전송을 위해 필요
+    sameSite: 'lax', // 같은 사이트이므로 lax 사용
+    path: '/' // 모든 경로에서 쿠키 사용
   }
 }));
 
@@ -77,6 +79,7 @@ app.post('/api/login', (req, res) => {
       }
       
       console.log('Session saved successfully');
+      console.log('Session cookie:', req.session.cookie);
       
       const sectionPages = {
         "EK": "eltrokorea9.html",
@@ -86,15 +89,17 @@ app.post('/api/login', (req, res) => {
       };
       const targetPage = sectionPages[section] || section + ".html";
       
-      // 쿠키 헤더 확인
-      console.log('Response headers:', res.getHeaders());
+      // 응답 헤더에 쿠키가 포함되는지 확인
+      const setCookieHeader = res.getHeader('Set-Cookie');
+      console.log('Set-Cookie header:', setCookieHeader);
       
       // 서버 사이드 리다이렉트로 변경
       res.json({ 
         success: true, 
         section: section,
         redirect: targetPage,
-        sessionId: req.sessionID
+        sessionId: req.sessionID,
+        cookieSet: !!setCookieHeader
       });
     });
   } else {
