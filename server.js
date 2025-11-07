@@ -319,6 +319,10 @@ function sortCalendarData(calendarData) {
     return calendarData;
   }
   
+  if (typeof calendarData.events !== 'object' || Array.isArray(calendarData.events)) {
+    return calendarData;
+  }
+  
   const sortedEvents = {};
   
   // 년도별로 정렬 (오름차순)
@@ -328,6 +332,11 @@ function sortCalendarData(calendarData) {
   
   sortedYears.forEach(year => {
     const yearData = calendarData.events[year];
+    if (!yearData || typeof yearData !== 'object' || Array.isArray(yearData)) {
+      sortedEvents[year] = yearData;
+      return;
+    }
+    
     const sortedMonths = {};
     
     // 월별로 정렬 (오름차순)
@@ -337,6 +346,11 @@ function sortCalendarData(calendarData) {
     
     monthKeys.forEach(month => {
       const monthData = yearData[month];
+      if (!monthData || typeof monthData !== 'object' || Array.isArray(monthData)) {
+        sortedMonths[month] = monthData;
+        return;
+      }
+      
       const sortedDays = {};
       
       // 일별로 정렬 (오름차순)
