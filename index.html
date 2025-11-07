@@ -193,6 +193,7 @@
           headers: {
             'Content-Type': 'application/json'
           },
+          credentials: 'include', // 쿠키 포함
           body: JSON.stringify({
             section: section,
             password: userInput
@@ -209,7 +210,8 @@
           alert(result.message || "비밀번호가 틀렸습니다.");
         }
       } catch (error) {
-        alert("로그인 중 오류가 발생했습니다.");
+        console.error('Login error:', error);
+        alert("로그인 중 오류가 발생했습니다: " + error.message);
       }
     }
   </script>
