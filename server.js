@@ -293,47 +293,60 @@ function syncFromHardDrive() {
     try {
       if (fs.existsSync(filePath)) {
         const data = JSON.parse(fs.readFileSync(filePath, "utf8"));
+        console.log(`Loaded ${name} from ${filePath}`);
         return data;
       } else {
+        console.log(`${name} file not found: ${filePath}, using default value`);
         return defaultValue;
       }
     } catch (error) {
+      console.error(`Error loading ${name} from ${filePath}:`, error.message);
       return defaultValue;
     }
   };
   
-  // 1. Price Data 동기화
-  priceStore = loadJsonFile(DATA_FILE, {}, "Price Data");
-  
-  // 2. Order Data 동기화
-  orderStore = loadJsonFile(ORDER_DATA_FILE, [], "Order Data");
-  if (orderStore.length > 0) {
-    orderStore = sortOrderStore(orderStore);
-  }
-  
-  // 3. Calendar Data 동기화
-  calendarStore = loadJsonFile(CALENDAR_DATA_FILE, {}, "Calendar Data");
-  
-  // 3. Credit Note Data 동기화
-  creditNoteStore = loadJsonFile(CREDIT_NOTE_FILE, [], "Credit Note Data");
-  
-  // 5. Transfer Data 동기화
-  transferStore = loadJsonFile(TRANSFER_DATA_FILE, { transfers: [], payrolls: [], deposits: [] }, "Transfer Data");
-  
-  // 6. Accounting Data 동기화
-  accountingStore = loadJsonFile(ACCOUNTING_DATA_FILE, { balance: [] }, "Accounting Data");
-  if (!accountingStore.balance) {
-    accountingStore.balance = [];
+  try {
+    // 1. Price Data 동기화
+    priceStore = loadJsonFile(DATA_FILE, {}, "Price Data");
+    
+    // 2. Order Data 동기화
+    orderStore = loadJsonFile(ORDER_DATA_FILE, [], "Order Data");
+    if (orderStore.length > 0) {
+      orderStore = sortOrderStore(orderStore);
+    }
+    
+    // 3. Calendar Data 동기화
+    calendarStore = loadJsonFile(CALENDAR_DATA_FILE, {}, "Calendar Data");
+    
+    // 4. Credit Note Data 동기화
+    creditNoteStore = loadJsonFile(CREDIT_NOTE_FILE, [], "Credit Note Data");
+    
+    // 5. Transfer Data 동기화
+    transferStore = loadJsonFile(TRANSFER_DATA_FILE, { transfers: [], payrolls: [], deposits: [] }, "Transfer Data");
+    
+    // 6. Accounting Data 동기화
+    accountingStore = loadJsonFile(ACCOUNTING_DATA_FILE, { balance: [] }, "Accounting Data");
+    if (!accountingStore.balance) {
+      accountingStore.balance = [];
+    }
+  } catch (error) {
+    console.error('Error in syncFromHardDrive:', error);
+    throw error;
   }
 }
 
 // 서버 시작 시 동기화 실행
+console.log('Server initialization started...');
 try {
+  console.log('Starting data synchronization...');
   syncFromHardDrive();
   console.log('Data synchronization completed');
 } catch (error) {
   console.error('Error during data synchronization:', error);
+  // 에러가 발생해도 서버는 계속 실행되도록 함
 }
+
+console.log('Starting Express server...');
 
 //===================================================
 // pricedata.json API 모음
