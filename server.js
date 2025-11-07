@@ -348,6 +348,16 @@ try {
 
 console.log('Starting Express server...');
 
+// 헬스체크 엔드포인트 (Railway 헬스체크용)
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "ok", message: "Server is running" });
+});
+
+// 루트 경로 (Railway 헬스체크용)
+app.get("/", (req, res) => {
+  res.status(200).json({ status: "ok", message: "EltroKorea API Server" });
+});
+
 //===================================================
 // pricedata.json API 모음
 //===================================================
