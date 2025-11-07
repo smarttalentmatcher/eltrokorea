@@ -8,17 +8,22 @@ const archiver = require("archiver");
 const session = require("express-session");
 
 const app = express();
+
+// Railway 프록시 신뢰 설정
+app.set('trust proxy', 1);
+
 app.use(express.json());
 
 // CORS 설정 (세션 쿠키 전송을 위해 필요)
 app.use((req, res, next) => {
-  const origin = req.headers.origin;
+  const origin = req.headers.origin || req.headers.referer?.split('/').slice(0, 3).join('/');
   if (origin) {
     res.header('Access-Control-Allow-Origin', origin);
   }
   res.header('Access-Control-Allow-Credentials', 'true');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Cookie');
+  res.header('Access-Control-Expose-Headers', 'Set-Cookie');
   if (req.method === 'OPTIONS') {
     return res.sendStatus(200);
   }
@@ -28,16 +33,18 @@ app.use((req, res, next) => {
 // 세션 설정
 app.use(session({
   secret: process.env.SESSION_SECRET || 'eltrokorea-secret-key-2024',
-  resave: true, // 세션 저장 강제
-  saveUninitialized: true, // 초기화되지 않은 세션도 저장
-  name: 'connect.sid', // 기본 세션 쿠키 이름
+  resave: false,
+  saveUninitialized: false,
+  name: 'connect.sid',
   cookie: {
-    secure: true, // Railway는 항상 HTTPS 제공
+    secure: true, // Railway는 항상 HTTPS
     httpOnly: true,
     maxAge: 4 * 60 * 60 * 1000, // 4시간
-    sameSite: 'lax', // 같은 사이트이므로 lax 사용
-    path: '/' // 모든 경로에서 쿠키 사용
-  }
+    sameSite: 'none', // Railway 프록시 환경에서는 none 필요
+    path: '/',
+    domain: undefined // 도메인 제한 없음
+  },
+  proxy: true // Railway 프록시 사용
 }));
 
 // 비밀번호 설정
