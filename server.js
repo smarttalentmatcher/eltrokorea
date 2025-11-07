@@ -159,14 +159,22 @@ app.use((req, res, next) => {
 app.use(express.static(__dirname, {
   setHeaders: (res, filePath) => {
     // HTML 파일은 위 미들웨어에서 처리되므로 여기서는 제외
-  }
+  },
+  index: false // index.html 자동 제공 비활성화
 }));
 
-// HTML 파일 제공 라우트 (인증 후)
-app.get('*.html', (req, res) => {
+// HTML 파일 제공 라우트 (인증 후) - 모든 HTML 파일 처리
+app.get(/\.html$/, (req, res) => {
   const filePath = path.join(__dirname, req.path);
-  if (fs.existsSync(filePath)) {
-    res.sendFile(filePath);
+  const normalizedPath = path.normalize(filePath);
+  
+  // 보안: __dirname 밖으로 나가는 경로 차단
+  if (!normalizedPath.startsWith(path.normalize(__dirname))) {
+    return res.status(403).send('Forbidden');
+  }
+  
+  if (fs.existsSync(normalizedPath)) {
+    res.sendFile(normalizedPath);
   } else {
     res.status(404).send('File not found');
   }
