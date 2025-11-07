@@ -3255,6 +3255,8 @@ app.post('/api/admin/upload-json', upload.single('file'), (req, res) => {
     // save-json API와 동일한 로직 사용
     let filePath;
     
+    let dataToSave = jsonData;
+    
     switch (fileName) {
       case 'priceData.json':
         filePath = DATA_FILE;
@@ -3264,6 +3266,7 @@ app.post('/api/admin/upload-json', upload.single('file'), (req, res) => {
         filePath = ORDER_DATA_FILE;
         orderStore = jsonData;
         orderStore = sortOrderStore(orderStore);
+        dataToSave = orderStore;
         break;
       case 'creditnote.json':
         filePath = CREDIT_NOTE_FILE;
@@ -3275,20 +3278,21 @@ app.post('/api/admin/upload-json', upload.single('file'), (req, res) => {
         break;
       case 'calendar.json':
         filePath = CALENDAR_DATA_FILE;
-        calendarStore = jsonData;
-        calendarStore = sortCalendarData(calendarStore);
+        calendarStore = sortCalendarData(jsonData);
+        dataToSave = calendarStore;
         break;
       case 'accounting.json':
         filePath = ACCOUNTING_DATA_FILE;
         accountingStore = jsonData;
-        accountingStore = sortAccountingData(accountingStore);
+        sortAccountingData(accountingStore);
+        dataToSave = accountingStore;
         break;
       default:
         return res.status(400).json({ error: '지원하지 않는 파일입니다.' });
     }
     
-    // 파일 저장
-    fs.writeFileSync(filePath, JSON.stringify(jsonData, null, 2), 'utf8');
+    // 파일 저장 (정렬된 데이터 저장)
+    fs.writeFileSync(filePath, JSON.stringify(dataToSave, null, 2), 'utf8');
     
     res.json({ success: true, message: `${fileName}이(가) 업로드되었습니다.` });
   } catch (error) {
