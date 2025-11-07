@@ -10,6 +10,18 @@ const session = require("express-session");
 const app = express();
 app.use(express.json());
 
+// CORS 설정 (세션 쿠키 전송을 위해 필요)
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  next();
+});
+
 // 세션 설정
 app.use(session({
   secret: process.env.SESSION_SECRET || 'eltrokorea-secret-key-2024',
