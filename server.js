@@ -195,8 +195,13 @@ const upload = multer({
   storage: multer.memoryStorage(),
   preservePath: true,
   fileFilter: function (req, file, cb) {
-    const allowedTypes = /jpeg|jpg|png|gif|pdf|doc|docx|txt/;
+    const allowedTypes = /jpeg|jpg|png|gif|pdf|doc|docx|txt|json/;
     const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    // JSON 파일의 경우 mimetype이 다양할 수 있으므로 확장자만 체크
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (ext === '.json') {
+      return cb(null, true);
+    }
     const mimetype = allowedTypes.test(file.mimetype);
     
     if (mimetype && extname) {
