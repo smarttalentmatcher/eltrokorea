@@ -1287,9 +1287,7 @@
                     const data = {};
                     fields.forEach(field => {
                         const value = item[field];
-                        // 모든 '/' 제거 (replaceAll 대신 정규식 사용)
-                        const key = field.replace(/\//g, '');
-                        data[key] = (value !== undefined && value !== null) ? value : '';
+                        data[field.replace('/', '')] = (value !== undefined && value !== null) ? value : '';
                     });
                     
                     // deliveryNo 추가
@@ -1328,7 +1326,7 @@
                 // 두 번째 행 (번호 정보 표시)
                 const secondRow = document.createElement('tr');
                 secondRow.innerHTML = `
-                    <td style="${textStyle}">${itemData.dnnno || ''}</td>
+                    <td style="${textStyle}">${itemData.dnno || ''}</td>
                     <td style="${textStyle}">${itemData.pino}${itemData.pino2 ? '<br/>' + itemData.pino2 : ''}</td>
                     <td></td>
                     <td style="${textStyle}">${itemData.invoiceno || ''}</td>
