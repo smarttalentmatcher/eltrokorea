@@ -1287,7 +1287,9 @@
                     const data = {};
                     fields.forEach(field => {
                         const value = item[field];
-                        data[field.replace('/', '')] = (value !== undefined && value !== null) ? value : '';
+                        // 모든 '/' 제거 (replaceAll 대신 정규식 사용)
+                        const key = field.replace(/\//g, '');
+                        data[key] = (value !== undefined && value !== null) ? value : '';
                     });
                     
                     // deliveryNo 추가
