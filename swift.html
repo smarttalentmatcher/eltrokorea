@@ -2060,8 +2060,9 @@
       }
     }
     
-     // 모든 행 삭제 함수
+     // 모든 행 삭제 함수 (2% discount 행 제외)
      function clearAllRows() {
+       // category2-row만 삭제 (2% discount 행은 category1-subtotal-row이므로 제외됨)
        document.querySelectorAll('.category2-row').forEach(row => row.remove());
        displayCurrentRows();
      }
@@ -2079,10 +2080,10 @@
        console.log(`✅ ${discountRows.length}개의 2% discount 행이 제거되었습니다.`);
      }
     
-    // 모두 적용 함수 - 기존 (+)Add 버튼을 사용해서 행 추가
+    // 모두 적용 함수 - 기존 (+)Add 버튼을 사용해서 행 추가 (2% discount 행 제외)
     async function applyAllItems() {
       try {
-        // 기존 카테고리 2 행 모두 삭제
+        // 기존 카테고리 2 행만 삭제 (2% discount 행은 category1-subtotal-row이므로 제외됨)
         document.querySelectorAll('.category2-row').forEach(row => row.remove());
         
         // Credit Note 데이터 로드
@@ -2128,7 +2129,7 @@
           }
         }
         
-        // 정렬 및 목록 새로고침
+        // 정렬 및 목록 새로고침 (2% discount 행은 organizeTable에서 보존됨)
         organizeTable();
         displayCurrentRows();
         
@@ -2141,7 +2142,10 @@
     // 테이블 정렬 함수
     function organizeTable() {
       const tbody = document.getElementById('orderTbody');
-      const rows = Array.from(tbody.querySelectorAll('tr:not(.total-row)'));
+      const rows = Array.from(tbody.querySelectorAll('tr:not(.total-row):not(.category1-subtotal-row)'));
+      
+      // 2% discount 행 보존 (제외하지 않음)
+      const discountRows = Array.from(tbody.querySelectorAll('tr.category1-subtotal-row'));
       
       // 숫자 추출 헬퍼 함수
       const extractNumber = (value, prefix = '') => {
@@ -2175,10 +2179,25 @@
         return 0;
       });
       
-      // DOM 재구성
+      // DOM 재구성 (2% discount 행 보존)
       const totalRow = tbody.querySelector('.total-row');
       rows.forEach(row => row.remove());
-      [...category1Rows, ...category2Rows].forEach(row => tbody.appendChild(row));
+      
+      // category1 행들 추가 후, 각 category1 그룹 뒤에 해당하는 discount 행 추가
+      category1Rows.forEach((category1Row, index) => {
+        tbody.appendChild(category1Row);
+        
+        // 마지막 category1 행 뒤에 discount 행 추가
+        if (index === category1Rows.length - 1 && discountRows.length > 0) {
+          discountRows.forEach(discountRow => {
+            category1Row.insertAdjacentElement('afterend', discountRow);
+          });
+        }
+      });
+      
+      // category2 행들 추가
+      category2Rows.forEach(row => tbody.appendChild(row));
+      
       if (totalRow) tbody.appendChild(totalRow);
       
       displayCurrentRows();
