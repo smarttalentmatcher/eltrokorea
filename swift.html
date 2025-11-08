@@ -1334,15 +1334,8 @@
               const pino2Values = ['8993014165', '8993013490']; // 실제 p/ino2 값들
               
               if (pino2Values.includes(selectedPino)) {
-                console.log('✅ p/ino2 선택됨 - Save2 버튼 활성화, Save 버튼 비활성화');
-                // Save2 버튼 활성화 (검정색)
-                save2Btn.classList.add('save2-selected');
-                save2Btn.style.backgroundColor = '#000';
-                save2Btn.style.color = '#fff';
-                save2Btn.style.borderColor = '#000';
-                save2Btn.disabled = false;
-                save2Btn.style.opacity = '1';
-                save2Btn.style.cursor = 'pointer';
+                console.log('✅ p/ino2 선택됨 - Save 버튼 비활성화');
+                // Save2 버튼은 변화 없음 (기본 상태 유지)
                 
                 // Save 버튼 비활성화
                 saveBtn.disabled = true;
@@ -2716,15 +2709,8 @@
                 const pino2Values = ['8993014165', '8993013490']; // 실제 p/ino2 값들
                 
                 if (pino2Values.includes(pino)) {
-                  console.log('✅ 자동 로드된 p/ino2 - Save2 버튼 활성화, Save 버튼 비활성화');
-                  // Save2 버튼 활성화 (검정색)
-                  save2Btn.classList.add('save2-selected');
-                  save2Btn.style.backgroundColor = '#000';
-                  save2Btn.style.color = '#fff';
-                  save2Btn.style.borderColor = '#000';
-                  save2Btn.disabled = false;
-                  save2Btn.style.opacity = '1';
-                  save2Btn.style.cursor = 'pointer';
+                  console.log('✅ 자동 로드된 p/ino2 - Save 버튼 비활성화');
+                  // Save2 버튼은 변화 없음 (기본 상태 유지)
                   
                   // Save 버튼 비활성화
                   saveBtn.disabled = true;
