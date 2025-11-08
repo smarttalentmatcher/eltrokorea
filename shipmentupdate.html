@@ -2103,6 +2103,10 @@
       
       // Order No 정렬 (년도 → 번호 순)
       availableOrders.sort((a, b) => {
+        if (!a.orderNo || !b.orderNo) {
+          return (a.orderNo || '').localeCompare(b.orderNo || '');
+        }
+        
         const aParts = a.orderNo.split('-');
         const bParts = b.orderNo.split('-');
         
