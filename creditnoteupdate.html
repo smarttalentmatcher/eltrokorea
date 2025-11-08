@@ -332,18 +332,29 @@
   // placeholder 업데이트 함수
   function updatePlaceholder() {
     const inputArea = document.getElementById("inputArea");
-    if (!inputArea) return;
+    const amountInput = document.getElementById("amountInput");
     
-    let placeholder;
+    let inputAreaPlaceholder;
     if (selectedDoc === "C/N") {
-      placeholder = "C/N모드만 사용\n\n전체선택: Ctrl+A\n복사: Ctrl+C\n여기에 붙여넣기: Ctrl+V";
+      inputAreaPlaceholder = "C/N모드만 사용\n\n전체선택: Ctrl+A\n복사: Ctrl+C\n여기에 붙여넣기: Ctrl+V";
     } else if (selectedDoc === "O/P" || selectedDoc === "L/P") {
-      placeholder = "Empty";
+      inputAreaPlaceholder = "Empty";
     } else {
-      placeholder = "C/N모드만 사용\n\n전체선택: Ctrl+A\n복사: Ctrl+C\n여기에 붙여넣기: Ctrl+V";
+      inputAreaPlaceholder = "C/N모드만 사용\n\n전체선택: Ctrl+A\n복사: Ctrl+C\n여기에 붙여넣기: Ctrl+V";
     }
     
-    inputArea.placeholder = placeholder;
+    if (inputArea) {
+      inputArea.placeholder = inputAreaPlaceholder;
+    }
+    
+    // O/P와 L/P 모드일 때 유로 입력 필드에 "Empty" placeholder 설정
+    if (amountInput) {
+      if (selectedDoc === "O/P" || selectedDoc === "L/P") {
+        amountInput.placeholder = "Empty";
+      } else {
+        amountInput.placeholder = "";
+      }
+    }
   }
 
   // doc 버튼 이벤트 리스너 등록 함수
