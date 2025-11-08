@@ -1950,18 +1950,25 @@
   function setupDropdownEventListeners(row) {
     // Mode 드롭다운 변경 이벤트
     const modeDropdown = row.querySelector('.modeDropdown');
-    modeDropdown.addEventListener('change', function() {
-      const selectedMode = this.value;
-      const currentRow = this.closest('tr');
-      
-      // 현재 행부터 아래 행들의 모드를 동일하게 설정 (이벤트 트리거 없이)
-      updateRowsBelow(currentRow, 'mode', selectedMode, false);
-      
-      // Order No 목록 업데이트 (현재 행부터 아래 행들만, 한 번만 호출)
-      if (selectedMode) {
+    if (modeDropdown) {
+      modeDropdown.addEventListener('change', function() {
+        const selectedMode = this.value;
+        const currentRow = this.closest('tr');
+        
+        console.log(`Mode 변경: ${selectedMode}, 행:`, currentRow);
+        
+        if (!selectedMode) {
+          console.warn('Mode가 선택되지 않았습니다.');
+          return;
+        }
+        
+        // 현재 행부터 아래 행들의 모드를 동일하게 설정 (이벤트 트리거 없이)
+        updateRowsBelow(currentRow, 'mode', selectedMode, false);
+        
+        // Order No 목록 업데이트 (현재 행부터 아래 행들만, 한 번만 호출)
         updateOrderDropdown(selectedMode, currentRow);
-      }
-    });
+      });
+    }
     
     // Order No 드롭다운 변경 이벤트
     const orderDropdown = row.querySelector('.orderDropdown');
@@ -2063,7 +2070,15 @@
   // Order No 드롭다운 업데이트 함수
   async function updateOrderDropdown(selectedMode, startRow = null) {
     try {
+      if (!selectedMode) {
+        console.warn('updateOrderDropdown: selectedMode가 없습니다.');
+        return;
+      }
+      
       const response = await fetch(`/api/orders`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       const orders = await response.json();
       
       // isProductionComplete: true이고 complete가 true가 아닌 아이템이 있는 주문들 필터링
@@ -2077,10 +2092,14 @@
           modeMatches = order.mode === selectedMode;
         }
         
-        return modeMatches && order.items?.some(item => 
+        const hasAvailableItems = order.items?.some(item => 
           item.isProductionComplete === true && item.complete !== true
         );
+        
+        return modeMatches && hasAvailableItems;
       });
+      
+      console.log(`updateOrderDropdown: 모드=${selectedMode}, 필터링된 주문 수=${availableOrders.length}`);
       
       // Order No 정렬 (년도 → 번호 순)
       availableOrders.sort((a, b) => {
@@ -2106,11 +2125,22 @@
         // startRow부터 아래 행들만
         const allRows = Array.from(document.querySelectorAll('#shipmentTableBody tr'));
         const startRowIndex = allRows.indexOf(startRow);
+        if (startRowIndex === -1) {
+          console.warn('updateOrderDropdown: startRow를 찾을 수 없습니다.');
+          return;
+        }
         const rowsBelow = allRows.slice(startRowIndex);
         targetDropdowns = rowsBelow.map(row => row.querySelector('.orderDropdown')).filter(dropdown => dropdown);
       } else {
         // 모든 행
-        targetDropdowns = document.querySelectorAll('.orderDropdown');
+        targetDropdowns = Array.from(document.querySelectorAll('.orderDropdown'));
+      }
+      
+      console.log(`updateOrderDropdown: 업데이트할 드롭다운 수=${targetDropdowns.length}`);
+      
+      if (targetDropdowns.length === 0) {
+        console.warn('updateOrderDropdown: 업데이트할 드롭다운이 없습니다.');
+        return;
       }
       
       targetDropdowns.forEach(dropdown => {
@@ -2130,6 +2160,7 @@
         });
       });
       
+      console.log(`updateOrderDropdown: 완료. 각 드롭다운에 ${availableOrders.length}개 옵션 추가됨`);
       
     } catch (error) {
       console.error('Order No 드롭다운 업데이트 중 오류:', error);
