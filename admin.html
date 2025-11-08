@@ -1059,6 +1059,10 @@
       
       document.getElementById('saveCurrentBtn').addEventListener('click', saveJsonHandler);
       document.getElementById('downloadCurrentBtn').addEventListener('click', downloadJsonHandler);
+      const deleteBtn = document.getElementById('deleteCurrentJsonBtn');
+      if (deleteBtn) {
+        deleteBtn.addEventListener('click', deleteJsonHandler);
+      }
     }
     
     currentUploadPath = '';
