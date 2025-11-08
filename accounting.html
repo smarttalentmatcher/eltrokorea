@@ -2392,18 +2392,62 @@
       daySelect.value = currentDay;
     }
 
-    // balance 데이터에서 사용 가능한 날짜들을 가져오는 함수
+    // 모든 카테고리에서 사용 가능한 날짜들을 가져오는 함수
     function getAvailableDates() {
       const dates = new Set();
       
-      // balance 데이터에서 모든 날짜 수집
-      if (window.accountingData && window.accountingData.balance) {
+      if (!window.accountingData) return [];
+      
+      // 1. balance 데이터에서 모든 날짜 수집
+      if (window.accountingData.balance) {
         window.accountingData.balance.forEach(account => {
           if (account.balances) {
             Object.keys(account.balances).forEach(date => {
               dates.add(date);
             });
           }
+        });
+      }
+      
+      // 2. transaction 데이터에서 모든 날짜 수집 (withdrawal, deposit)
+      if (window.accountingData.transaction) {
+        if (window.accountingData.transaction.withdrawal) {
+          Object.keys(window.accountingData.transaction.withdrawal).forEach(date => {
+            dates.add(date);
+          });
+        }
+        if (window.accountingData.transaction.deposit) {
+          Object.keys(window.accountingData.transaction.deposit).forEach(date => {
+            dates.add(date);
+          });
+        }
+      }
+      
+      // 3. notes 데이터에서 모든 날짜 수집 (nuintek, sungmoon)
+      if (window.accountingData.notes) {
+        if (window.accountingData.notes.nuintek) {
+          Object.keys(window.accountingData.notes.nuintek).forEach(date => {
+            dates.add(date);
+          });
+        }
+        if (window.accountingData.notes.sungmoon) {
+          Object.keys(window.accountingData.notes.sungmoon).forEach(date => {
+            dates.add(date);
+          });
+        }
+      }
+      
+      // 4. loanto 데이터에서 모든 날짜 수집
+      if (window.accountingData.loanto) {
+        Object.keys(window.accountingData.loanto).forEach(date => {
+          dates.add(date);
+        });
+      }
+      
+      // 5. debt 데이터에서 모든 날짜 수집
+      if (window.accountingData.debt) {
+        Object.keys(window.accountingData.debt).forEach(date => {
+          dates.add(date);
         });
       }
       
