@@ -2101,7 +2101,7 @@
           document.getElementById('addCategory2Btn').click();
           
           // DOM 업데이트 대기
-          await new Promise(resolve => setTimeout(resolve, 50));
+          await new Promise(resolve => setTimeout(resolve, 100));
           
           const category2Rows = document.querySelectorAll('.category2-row');
           const newRow = category2Rows[category2Rows.length - 1];
@@ -2111,13 +2111,35 @@
             const itemSelect = newRow.querySelector('td:nth-child(3) select');
             
             if (typeSelect && itemSelect) {
+              // 타입 선택
               typeSelect.value = item.type;
-              typeSelect.dispatchEvent(new Event('change'));
+              typeSelect.dispatchEvent(new Event('change', { bubbles: true }));
               
-              await new Promise(resolve => setTimeout(resolve, 100));
+              // 드롭다운이 업데이트될 때까지 대기 (최대 1초)
+              let attempts = 0;
+              const maxAttempts = 20;
+              while (attempts < maxAttempts) {
+                await new Promise(resolve => setTimeout(resolve, 50));
+                
+                // 원하는 값이 드롭다운에 있는지 확인
+                const optionExists = Array.from(itemSelect.options).some(
+                  option => option.value === item.no
+                );
+                
+                if (optionExists) {
+                  break;
+                }
+                attempts++;
+              }
               
+              // 값이 존재하면 선택
+              if (Array.from(itemSelect.options).some(option => option.value === item.no)) {
                 itemSelect.value = item.no;
-                itemSelect.dispatchEvent(new Event('change'));
+                itemSelect.dispatchEvent(new Event('change', { bubbles: true }));
+                
+                // change 이벤트 처리 대기
+                await new Promise(resolve => setTimeout(resolve, 100));
+              }
             }
           }
         }
