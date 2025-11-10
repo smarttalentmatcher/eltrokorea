@@ -3899,6 +3899,33 @@
       }
     });
     
+    // 새로고침 버튼 이벤트 리스너 등록
+    const refreshBtn = document.getElementById("refreshBtn");
+    if (refreshBtn) {
+      refreshBtn.addEventListener("click", function() {
+        // 모든 행 삭제
+        const tbody = document.getElementById("orderTableBody");
+        tbody.innerHTML = '';
+        
+        // 모든 입력 필드 비우기
+        const orderIdInput = document.getElementById('orderIdInput');
+        const orderDateInput = document.getElementById('orderDateInput');
+        const warehouseInput = document.getElementById('warehouseInput');
+        if (orderIdInput) orderIdInput.value = '';
+        if (orderDateInput) orderDateInput.value = '';
+        if (warehouseInput) warehouseInput.value = '';
+        
+        // 전역 변수 초기화
+        originalParsedData = null;
+        originalSelectedMode = null;
+        isNewOrderFlag = false;
+        originalFileName = null;
+        
+        // 총합 업데이트
+        updateTotals();
+      });
+    }
+    
     // + 버튼 이벤트 리스너 등록
     const addRowButton = document.getElementById("addRowButton");
     if (addRowButton) {
