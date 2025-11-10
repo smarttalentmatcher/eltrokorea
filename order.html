@@ -411,7 +411,7 @@
     }
 
     /* 기타 버튼 스타일 */
-    #refreshBtn, #addRowButton, #convertBtn, #optimizeBtn, #saveBtn, #emailBtn {
+    #addRowButton, #convertBtn, #optimizeBtn, #saveBtn, #emailBtn {
       font-size: 0.9rem;
       padding: 5px 10px;
       margin: 0 3px;
@@ -441,7 +441,7 @@
     }
 
     /* 버튼 호버 효과 */
-    #refreshBtn:hover, #addRowButton:hover, #convertBtn:hover, #optimizeBtn:hover, #saveBtn:hover, #emailBtn:hover {
+    #addRowButton:hover, #convertBtn:hover, #optimizeBtn:hover, #saveBtn:hover, #emailBtn:hover {
       background: #f0f0f0;
       border-color: #999;
     }
@@ -548,29 +548,29 @@
     }
 
     /* + 버튼은 정사각형으로 */
-    #refreshBtn {
-      min-width: 30px;
+    .refresh-btn {
+      font-size: 0.9rem;
+      padding: 5px;
+      margin: 0 3px;
+      cursor: pointer;
+      border: 1px solid #ccc;
+      background: #fff;
+      color: #000;
+      border-radius: 3px;
       width: 30px;
       height: 30px;
-      padding: 0;
+      min-width: 30px;
+      max-width: 30px;
+      line-height: 1.2;
+      box-sizing: border-box;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.2rem;
-      font-weight: normal;
-      background: transparent;
-      border: none;
-      box-shadow: none;
     }
-    
-    #refreshBtn svg {
-      width: 16px;
-      height: 16px;
-      color: #000;
-    }
-    
-    #refreshBtn:hover svg {
-      color: #666;
+
+    .refresh-btn:hover {
+      background: #f0f0f0;
+      border-color: #999;
     }
 
     #addRowButton {
@@ -866,13 +866,7 @@
     
           <!-- 기본 버튼 영역 (항상 보임) -->
       <div class="main-button-group">
-        <button id="refreshBtn" type="button" title="새로고침">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5" fill="none"/>
-            <path d="M8 1 L8 5 L5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-            <path d="M8 15 L8 11 L11 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-          </svg>
-        </button>
+        <button id="refreshBtn" type="button" class="refresh-btn" title="새로고침">↻</button>
         <button id="addRowButton" type="button">+</button>
         <button id="convertBtn" type="button">Convert</button>
         <button id="optimizeBtn" type="button">Optimize</button>
