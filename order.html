@@ -3675,6 +3675,26 @@
   // DOMContentLoaded: isNewOrder 플래그에 따라 초기화 결정
   // ===================================================
   window.addEventListener('DOMContentLoaded', ()=>{
+    // orderupdate.html에서 sessionStorage로 전달된 데이터를 전역 변수로 복사
+    // (orderupdate.html은 여전히 sessionStorage를 사용하므로 호환성 유지)
+    try {
+      const savedData = sessionStorage.getItem('parsedData');
+      const savedMode = sessionStorage.getItem('selectedMode');
+      const savedIsNewOrder = sessionStorage.getItem('isNewOrder');
+      
+      if (savedData) {
+        originalParsedData = JSON.parse(savedData);
+      }
+      if (savedMode) {
+        originalSelectedMode = savedMode;
+      }
+      if (savedIsNewOrder === 'true') {
+        isNewOrderFlag = true;
+      }
+    } catch (e) {
+      // sessionStorage 읽기 실패 시 무시
+    }
+    
     // isNewOrder 플래그 확인
     const tbody = document.getElementById("orderTableBody");
     
