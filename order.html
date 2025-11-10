@@ -411,7 +411,7 @@
     }
 
     /* 기타 버튼 스타일 */
-    #addRowButton, #convertBtn, #optimizeBtn, #saveBtn, #emailBtn {
+    #refreshBtn, #addRowButton, #convertBtn, #optimizeBtn, #saveBtn, #emailBtn {
       font-size: 0.9rem;
       padding: 5px 10px;
       margin: 0 3px;
@@ -441,7 +441,7 @@
     }
 
     /* 버튼 호버 효과 */
-    #addRowButton:hover, #convertBtn:hover, #optimizeBtn:hover, #saveBtn:hover, #emailBtn:hover {
+    #refreshBtn:hover, #addRowButton:hover, #convertBtn:hover, #optimizeBtn:hover, #saveBtn:hover, #emailBtn:hover {
       background: #f0f0f0;
       border-color: #999;
     }
@@ -548,6 +548,18 @@
     }
 
     /* + 버튼은 정사각형으로 */
+    #refreshBtn {
+      min-width: 30px;
+      width: 30px;
+      height: 30px;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      font-weight: normal;
+    }
+
     #addRowButton {
       min-width: 30px;
       width: 30px;
@@ -841,6 +853,7 @@
     
           <!-- 기본 버튼 영역 (항상 보임) -->
       <div class="main-button-group">
+        <button id="refreshBtn" type="button" title="새로고침">🔄</button>
         <button id="addRowButton" type="button">+</button>
         <button id="convertBtn" type="button">Convert</button>
         <button id="optimizeBtn" type="button">Optimize</button>
