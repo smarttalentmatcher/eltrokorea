@@ -2953,40 +2953,69 @@
         }
       }
       
-      // 드롭다운 값 설정 (옵션 로드 후)
-      allRows.forEach((row) => {
+      // 드롭다운 값 설정 (옵션 로드 후, change 이벤트 없이 직접 설정)
+      // 모든 행에 대해 순차적으로 설정하되, change 이벤트는 트리거하지 않음
+      for (const row of allRows) {
         const modeSelect = row.querySelector('.modeDropdown');
-        
-        if (modeSelect && row.dataset.mode) {
-          modeSelect.value = row.dataset.mode;
-          // Mode change 이벤트 수동 트리거 (Order No 드롭다운 로드)
-          modeSelect.dispatchEvent(new Event('change', { bubbles: true }));
-        }
-      });
-      
-      // Order No와 Item No 드롭다운이 업데이트될 때까지 대기
-      await new Promise(resolve => setTimeout(resolve, 300));
-      
-      allRows.forEach((row) => {
         const orderNoSelect = row.querySelector('.orderDropdown');
-        
-        if (orderNoSelect && row.dataset.orderNo) {
-          orderNoSelect.value = row.dataset.orderNo;
-          // Order No change 이벤트 수동 트리거 (Item No 드롭다운 로드)
-          orderNoSelect.dispatchEvent(new Event('change', { bubbles: true }));
-        }
-      });
-      
-      // Item No 드롭다운이 업데이트될 때까지 대기
-      await new Promise(resolve => setTimeout(resolve, 300));
-      
-      allRows.forEach((row) => {
         const itemNoSelect = row.querySelector('.itemDropdown');
         
+        // Mode 설정 (change 이벤트 없이)
+        if (modeSelect && row.dataset.mode) {
+          modeSelect.value = row.dataset.mode;
+        }
+      }
+      
+      // Order No 드롭다운이 업데이트될 때까지 대기
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // 각 행의 Order No에 대해 Item No 드롭다운 업데이트
+      const orderNoMap = new Map();
+      for (const row of allRows) {
+        const orderNo = row.dataset.orderNo;
+        if (orderNo && !orderNoMap.has(orderNo)) {
+          orderNoMap.set(orderNo, []);
+        }
+        if (orderNo) {
+          orderNoMap.get(orderNo).push(row);
+        }
+      }
+      
+      // 각 Order No에 대해 Item No 드롭다운 업데이트
+      for (const [orderNo, rows] of orderNoMap.entries()) {
+        try {
+          const response = await fetch(`/api/orders`);
+          const orders = await response.json();
+          const orderData = orders.find(order => order.orderNo === orderNo);
+          
+          if (orderData) {
+            for (const row of rows) {
+              const itemNo = row.dataset.itemNo || null;
+              updateItemDropdownForRowWithData(row, orderData, itemNo);
+            }
+          }
+        } catch (error) {
+          console.error('Item No 드롭다운 업데이트 중 오류:', error);
+        }
+      }
+      
+      // 모든 드롭다운 값 설정 (change 이벤트 없이 직접 설정)
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      for (const row of allRows) {
+        const orderNoSelect = row.querySelector('.orderDropdown');
+        const itemNoSelect = row.querySelector('.itemDropdown');
+        
+        // Order No 설정 (change 이벤트 없이)
+        if (orderNoSelect && row.dataset.orderNo) {
+          orderNoSelect.value = row.dataset.orderNo;
+        }
+        
+        // Item No 설정 (change 이벤트 없이)
         if (itemNoSelect && row.dataset.itemNo) {
           itemNoSelect.value = row.dataset.itemNo;
         }
-      });
+      }
       
       // 모든 행의 아이템 정보 업데이트
       for (let i = 0; i < items.length && i < allRows.length; i++) {
